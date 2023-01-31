@@ -75,7 +75,7 @@ console.log(x); // global;
    - 함수 정의와 동시에 단 한번만 호출된다.
      - 즉, 모든 코드를 즉시 실행 함수로 감싸면 모든 변수는 즉시 실행 함수의 지역 변수가 된다.
 
-```
+```Javascript
 (
     function(){
         var foo = 10; // 즉시 실행 함수의 지역 변수
@@ -87,7 +87,7 @@ console.log(x); // global;
 2. 네임스페이스 객체
    - 전역에 네임스페이스 역할을 담당할 객체를 생성하고 전역 변수처럼 사용하고 싶은 변수를 프로퍼티로 추가하는 방법이다.
 
-```
+```Javascript
     var MYAPP = {};
     MYAPP.name = "kamja";
     console.log(MYAPP.name); // kamja
@@ -95,7 +95,7 @@ console.log(x); // global;
 
     - 네임스페이스 객체에 또 다른 네임스페이스 객체를 프로퍼티로 추가해서 네임스페이스를 계층적으로 구성할 수 있다.
 
-```
+```Javascript
     var MYAPP = {};
     MYAPP.person = {
         name: "kamja";
@@ -150,6 +150,6 @@ console.log(Counter.decrease()); // 0
 
 #### ES6 모듈을 적용한 script태그
 
-```
+```Javascript
 <script type="module" src="lib.mjs"></script>
 ```
