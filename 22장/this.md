@@ -1,3 +1,16 @@
+1. [this 키워드](#this-키워드)<br>
+   &nbsp;&nbsp;1-1. [this](#this)<br>
+   &nbsp;&nbsp;1-2. [this 바인딩](#this-바인딩)<br>
+2. [함수 호출 방식과 this 바인딩](#함수-호출-방식과-this-바인딩)<br>
+   &nbsp;&nbsp;2-1. [렉시컬 스코프와 this 바인딩은 결정시기가 다르다.](#렉시컬-스코프와-this-바인딩은-결정시기가-다르다)<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;2-1-1. [함수를 호출하는 방식](#함수를-호출하는-방식)<br>
+   &nbsp;&nbsp;2-2. [일반 함수 호출](#일반-함수-호출)<br>
+   &nbsp;&nbsp;&nbsp;&nbsp;2-2-1. [setTimeout 함수](#settimeout-함수)<br>
+   &nbsp;&nbsp;2-3. [메서드 호출](#메서드-호출)<br>
+   &nbsp;&nbsp;2-4 [생성자 함수 호출](#생성자-함수-호출)<br>
+   &nbsp;&nbsp;2-5 [Function.prototype.apply/call/bind 메서드에 의한 간접 호출](#functionprototypeapplycallbind-메서드에-의한-간접-호출)<br>
+3. [함수 호출 방식에 따른 this 바인딩 정리](#함수-호출-방식에-따른-this-바인딩-정리)<br>
+
 # this 키워드
 
 객체
@@ -270,7 +283,7 @@ obj.foo();
 
 화살표 함수 내부의 this는 상위 스코프의 this를 가리킨다.
 
-# 메서드 호출
+## 메서드 호출
 
 메서드 내부의 this에는 메서드를 호출한 객체, 즉 메서드를 호출할 때 메서드 이름 앞의 마침표 연산자 앞에 기술한 객체가 바인딩된다.
 주의할 것은 메소드 내부의 this는 메서드를 소유한 객체가 아닌 메서드를 호출한 객체에 바인딩된다는 것이다.
@@ -353,3 +366,103 @@ console.log(circle2.getDiameter()); // 20
 생성자 함수는 객체(인스턴스)를 생성하는 함수이다.
 일반 함수와 동일한 방법으로 생성자 함수를 정의하고 new 연산자와 함께 호출하면 해당 함수는 생성자 함수로 동작한다.
 new 연산자와 함께 생성자 함수를 호출하지 않으면 생성자 함수가 아니라 일반 함수로 동작한다.
+
+## Function.prototype.apply/call/bind 메서드에 의한 간접 호출
+
+apply, call, bind 메서드는 Function.prototype의 메서드이다.
+
+- 즉, 모든 함수가 상속받아 사용할 수 있다.
+
+apply와 call 메서드는 this로 사용할 객체와 인수 리스트를 인수로 전달받아 함수를 호출한다.
+
+```js
+/**
+ * 주어진 this 바인딩과 인수 리스트 배열을 사용하여 함수를 호출한다.
+ * @param thisArg - this로 사용할 객체
+ * @param argsArray - 함수에게 전달할 인수 리스트의 배열 또는유사 배열 객체
+ * @returns 호출된함수의 반환값
+ */
+// Function.prototype.apply(thisArg[, argsArray])
+
+/**
+ * 주어진 this 바인딩과 ,로 구분된 인수 리스트를 사용하여 함수를 호출한다.
+ * @param thisArg - this로 사용할 객체
+ * @param arg1, arg2, ... - 함수에게 전달할 인수 리스트
+ * @returns 호출된 함수의 반환값
+ */
+// Function.prototype.call(thisArg[, args[, arg2[, ...]]])
+
+function getThisBinding() {
+  return this;
+}
+// this로 사용할 객체
+const thisArg = { a: 1 };
+
+console.log(getThisBinding()); // window
+
+// getThisBinding 함수를 호출하면서 인수로 전달할 객체를 getThisBinding 함수의 this에 바인딩한다.
+console.log(getThisBinding.apply(thisArg)); // {a : 1}
+console.log(getThisBinding.call(thisArg)); // {a : 1}
+```
+
+apply와 call 메서드의 기본적인 기능은 함수를 호출하는 것이다.
+
+- apply와 call 메서드는 함수를 호출하면서 첫 번쨰 인수로 전달한 특정 객체를 호출한 함수의 this에 바인딩한다.
+
+appㅣy와 call 메서드는 호출할 함수에 인수를 전달하는 방식만 다를 뿐 동일하게 동작한다.
+
+```js
+function convertArgsToArray() {
+  console.log(arguments);
+
+  // arguments 객체를 배열로 변환
+  // Array.prototype.slice를 인수 없이 호출하면 배열의 복사본을 생성한다.
+  const arr = Array.prototype.slice.call(arguments);
+  // const arr = Array.prototype.slice.apply(arguments);
+  console.log(arr);
+
+  return arr;
+}
+convertArgsToArray(1, 2, 3); // [1, 2, 3]
+```
+
+bind 메서드는 함수를 호출하지 않고 this로 사용할 객체만 전달한다.
+
+```js
+function getThisBinding() {
+  return this;
+}
+
+// this로 사용할 객체
+const thisArg = { a: 1 };
+
+// bind 메서드는 함수에 this로 사용할 객체를 전달한다.
+// bind 메서드는 함수를 호출하지 않는다.
+console.log(getThisBinding.bind(this.Arg)); // getThisBinging
+// bind 메서드는 함수를 호출하지 않으므로 명시적으로 호출해야 한다.
+console.log(getThisBinding.bind(thisArg)()); // {a : 1}
+```
+
+bind 메서드는 메서드의 this와 메서드 내부의 중첩 함수 또는 콜백 함수의 this가 불일치하는 문제를 해결하기 위해 유용하게 사용된다.
+
+```js
+const person = {
+  name: "Lee",
+  foo(callback) {
+    // bind 메서드로 callback 함수 내부의 this 바인딩을 전달
+    setTimeout(callback.bind(this), 100);
+  },
+};
+person.foo(function () {
+  console.log(`Hi! ${this.name}`); // Hi Lee
+});
+```
+
+# 함수 호출 방식에 따른 this 바인딩 정리
+
+|                       함수 호출 방식                       |                              this 바인딩                               |
+| :--------------------------------------------------------: | :--------------------------------------------------------------------: |
+|                       일반 함수 호출                       |                               전역 객체                                |
+|                        메서드 호출                         |                          메서드를 호출한 객체                          |
+|                      생성자 함수 호출                      |                 생성자 함수가 (미래에) 생성할 인스턴스                 |
+| Function.prototype.apply/call/bind 메서드에 의한 간접 호출 | Function.prototype.apply/call/bind 메서드에 첫 번째 인수로 전달한 객체 |
