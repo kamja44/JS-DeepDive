@@ -269,3 +269,61 @@ obj.foo();
 ```
 
 화살표 함수 내부의 this는 상위 스코프의 this를 가리킨다.
+
+# 메서드 호출
+
+메서드 내부의 this에는 메서드를 호출한 객체, 즉 메서드를 호출할 때 메서드 이름 앞의 마침표 연산자 앞에 기술한 객체가 바인딩된다.
+주의할 것은 메소드 내부의 this는 메서드를 소유한 객체가 아닌 메서드를 호출한 객체에 바인딩된다는 것이다.
+
+```js
+const person = {
+  name: "Lee",
+  getName() {
+    // 메서드 내부의 this는 메서드를 호출한 객체에 바인딩된다.
+    return this.name;
+  },
+};
+// 메서드 getName을 호출한 객체는 person이다.
+console.log(person.getName()); // Lee
+
+const anotherPerson = {
+  name: "kim",
+};
+// getName 메서드를 anotherPerson 객체의 메서드로 할당
+anotherPerson.getName = person.getName;
+console.log(anotherPerson.getName()); // kim
+
+// getName 메서드를 변수에 할당
+const getName = person.getName;
+
+// getName메서드를 일반 함수로 호출
+console.log(getName()); // ""
+// 일반 함수로 호출된 getName 함수 내부의 this.name은 브라우저 환경에서 window.name과 같다.
+```
+
+위 예의 getName 메서드는 person 객체의 메서드로 정의되어 있다.
+메서드는 프로퍼티에 바인딩된 함수이다.
+즉, person 객체의 getName 프로퍼티가 가리키는 함수 객체는 person 객체에 포함된 것이 아니라 독립적으로 존재하는 별도의 객체이다.
+getName 프로퍼티가 함수 객체를 기리키고 있을 뿐이다.
+
+`즉, 메서드 내부의 this는 자신을 호출한 객체를 가리킨다.`
+
+프로토타입 메서드 내부에서 사용된 this도 일반 메서드와 마찬가지로 해당 메서드를 호출한 객체에 바인딩 된다.
+
+```js
+function Person(name) {
+  this.name = name;
+}
+Person.prototype.getName = function () {
+  return this.name;
+};
+const me = new Person("Lee");
+
+// getName 메서드를 호출한 객체는 me다.
+console.log(me.getName()); // Lee
+
+Person.prototype.name = "Kim";
+
+// getName 메서드를 호출한 객체는 Person.prototype이다.
+console.log(Person.prototype.getName()); // Kim
+```
