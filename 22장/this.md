@@ -133,3 +133,139 @@ const me = new Person("Lee");
 this는 객체의 프로퍼티나 메서드를 참조하기 위한 자기 참조 변수이므로, 일반적으로 객체의 메서드 내부 또는 생성자 함수 내부에서만 의미가 있다.
 
 - 즉, strict mode가 적용된 일반 함수 내부의 this에는 undefined가 바인딩된다.
+
+# 함수 호출 방식과 this 바인딩
+
+`this 바인딩은 함수 호출 방식에 따라 동적으로 결정된다.`
+
+## 렉시컬 스코프와 this 바인딩은 결정시기가 다르다
+
+함수의 상위 스코프를 결정하는 방식인 렉시컬 스코프는 함수 정의가 평가되어 함수 객체가 생성되는 시점에 상위 스코프를 결정한다.
+this 바인딩은 함수 호출 시점에 결정된다.
+
+### 함수를 호출하는 방식
+
+1. 일반 함수 호출
+2. 메서드 호출
+3. 생성자 함수 호출
+4. Function.prototype.apply/call/bind 메서드에 의한 간접 호출
+
+## 일반 함수 호출
+
+`기본적으로 this에는 전역 객체가 바인딩된다.`
+
+```js
+function foo() {
+  console.log("foo's this: ", this); // window
+  function bar() {
+    console.log("bar's this: ", this); // window
+  }
+  bar();
+}
+foo();
+```
+
+전역 함수와 중첩 함수를 일반 함수로 호출하면 함수 내부의 this에는 전역 객체가 바인딩된다.
+
+strict mode가 적용된 일반 함수 내부의 this에는 undefined가 바인딩된다.
+
+```js
+function foo() {
+  "use strict";
+  console.log("foo's this: ", this); // window
+  function bar() {
+    console.log("bar's this: ", this); // window
+  }
+  bar();
+}
+foo();
+```
+
+메서드 내에서 정의한 중첩 함수도 일반함수로 호출되면 중첩 함수 내부의 this에는 전역 객체가 바인딩된다.
+
+```js
+var value = 1;
+// var 키워드로 선언한 전역 변수 value는 전역 객체의 프로퍼티이다.
+
+// const 키워드로 선언한 전역 변수 value는 전역 객체의프로퍼티가 아니다.
+const obj = {
+  value: 100,
+  foo() {
+    console.log("foo's this: ", this); // {value: 100, foo: f}
+    console.log("foo's this.value: ", this.value); // 100
+    // 메서드 내에서 정의한 중첩 함수
+    function bar() {
+      console.log("bar's this: ", this); // window
+      console.log("bar's this.value: ", this.value); // 1
+    }
+    // 메서드 내에서 정의한 중첩 함수도 일반 함수로 호출되면 중첩 함수 내부의 this에는 전역 객체가 바인딩된다.
+    bar();
+  },
+};
+obj.foo();
+```
+
+콜백 함수가 일반 함수로 호출된다면 콜백 함수 내부의 this에도 전역 객체가 바인딩된다.
+
+```js
+var value = 1;
+
+const obj = {
+  value: 100,
+  foo() {
+    console.log("foo's this: ", this); // {value : 100, foo : f}
+    // 콜백 함수 내부의 this에는 전역 객체가 바인딩된다.
+    setTimeout(function () {
+      console.log("callback's this ", this); // window
+      console.log("callback's this.value: ", this.value); // 1
+    }, 100);
+  },
+};
+obj.foo();
+```
+
+### setTimeout 함수
+
+두 번쨰 인수로 전달한 시간만큼 대기한 다음, 첫 번째 인수로 전달한 콜백 함수를 호출하는 타이머 함수이다.
+
+`일반 함수로 호출된 모든 함수 내부의 this에는 전역 객체가 바인딩된다.`
+
+- 즉, 외부 함수인 메서드와 중첩 함수 또는 콜백 함수의 this가 일치하지 않는 문제가 발생한다.
+  - 즉, 중첩 함수 or 콜백 함수가 헬퍼 함수로 동작하기 어렵게 만든다.
+
+메서드 내부의 중첩함수나 콜백 함수의 this 바인딩을 메서드의 this 바인딩과 일치시키기 위한 방법은 다음과 같다.
+
+```js
+var value = 1;
+const obj = {
+  valeu: 100,
+  foo() {
+    // this 바인딩(obj)을 변수 that에 할당한다.
+    const that = this;
+
+    // 콜백 함수 내부에서 this 대신 that을 참조한다.
+    setTimeout(function () {
+      console.log(that.value); // 100
+    }, 100);
+  },
+};
+obj.foo();
+```
+
+이 방법 외에도 Function.prototype.apply/call/bind 메서드를 이용하여 this를 명시적으로 바인딩할 수 있다.
+
+arrow function을 이용하여 this 바인딩을 일치시킬 수 있다.
+
+```js
+var value = 1;
+const obj = {
+  value: 100,
+  foo() {
+    // 화살표 함수 내부의 this는 상위 스코프의 this를 가리킨다.
+    setTimeout(() => console.log(this.value), 100); // 100
+  },
+};
+obj.foo();
+```
+
+화살표 함수 내부의 this는 상위 스코프의 this를 가리킨다.
