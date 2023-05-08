@@ -12,7 +12,12 @@
    &nbsp;&nbsp;&nbsp;&nbsp;3-3-2. [콜백 함수 내부의 this 문제를 해결하기 위한 방법(ES6)](#es6에서는-화살표-함수를-사용하여-콜백-함수-내부의-this-문제를-해결할-수-있다)<br>
    &nbsp;&nbsp;3-4. [super](#super)<br>
    &nbsp;&nbsp;3-5. [arguments](#arguments)<br>
-   &nbsp;&nbsp;3-5. [Rest 파라미터와 arguments 객체](#rest-파라미터와-arguments-객체)<br>
+4. [Rest 파라미터](#rest-파라미터)<br>
+   &nbsp;&nbsp;4-1. [기본 문법](#rest-파라미터-기본-문법)<br>
+   &nbsp;&nbsp;4-2. [Rest 파라미터와 arguments 객체](#rest-파라미터와-arguments-객체)<br>
+5. [매개변수 기본값](#매개변수-기본값)<br>
+   &nbsp;&nbsp;5-1. [ES5에서 매개변수에 기본값 할당하기](#es5에서-매개변수에-기본값-할당하기)<br>
+   &nbsp;&nbsp;5-2. [ES6에서 매개변수에 기본값 할당하기](#es6에서-매개변수에-기본값-할당하기)<br>
 
 ## 함수의 구분
 
@@ -706,3 +711,69 @@ console.log(sum(1, 2, 3, 4, 5)); // 15
 - ES6 메서드는 Rest 파라미터와 arguments 객체를 모두 사용할 수 있다.
   - 하지만, 화살표 함수는 함수 자체의 arguments 객체를 갖지 않는다.
   - 따라서 화살표 함수로 가변 인자 함수를 구현해야 할 때는 반드시 Rest 파라미터를 사용해야 한다.
+
+## 매개변수 기본값
+
+- 인수로 전달되지 않은 매개변수의 값은 undefiend이다.
+
+```js
+function sum(x, y) {
+  return x + y;
+}
+console.log(sum(1)); // NaN
+```
+
+- 위의 예와 같이 매개변수에 인수가 전달되었는지 확인하여 인수가 전달되지 않은 경우 매개변수에 기본값을 할당해야 한다.
+
+### ES5에서 매개변수에 기본값 할당하기
+
+```js
+function sum(x, y) {
+  // 인수가 전달되지 않아 매개변수의 값이 undefined인 경우 기본값을 할당한다.
+  x = x || 0;
+  y = y || 0;
+  return x + y;
+}
+console.log(sum(1)); // 1
+console.log(sum(1, 3)); //4
+```
+
+### ES6에서 매개변수에 기본값 할당하기
+
+```js
+function sum(x = 0, y = 0) {
+  return (x = y);
+}
+console.log(sum(1, 2)); // 3
+console.log(sum(1)); // 1
+```
+
+매개변수의 기본값은 매개변수에 인수를 전달하지 않은 경우와 undefined를 전달한 경우에만 유효하다.
+
+```js
+function logName(name = "Lee") {
+  console.log(name);
+}
+logName(); // Lee
+logName(undefined); // Lee
+logName(null); // null
+```
+
+Rest 파라미터에는 기본값을 저장할 수 없다.
+
+```js
+function foo(...rest = []){
+    console.log(rest); // SyntaxError
+}
+```
+
+매개변수 기본값은 함수 정의 시 선언한 매개변수 개수를 나타내는 함수 객체의 length 프로퍼티와 arguments 객체에 아무런 영향을 주지 않는다.
+
+```js
+function sum(x, y = 0) {
+  console.log(arguments);
+}
+console.log(sum.length); // 1
+sum(1); // Arguments [1, callee: (...), Symbol(Symbol.iterator): ƒ]
+sum(1, 2); // Arguments(2) [1, 2, callee: (...), Symbol(Symbol.iterator): ƒ]
+```
