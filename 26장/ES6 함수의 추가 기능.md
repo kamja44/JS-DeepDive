@@ -10,6 +10,7 @@
    &nbsp;&nbsp;3-3. [this](#this)<br>
    &nbsp;&nbsp;&nbsp;&nbsp;3-3-1. [콜백 함수 내부의 this 문제를 해결하기 위한 방법(ES5)](#콜백-함수-내부의-this-문제를-해결하기-위한-방법)<br>
    &nbsp;&nbsp;&nbsp;&nbsp;3-3-2. [콜백 함수 내부의 this 문제를 해결하기 위한 방법(ES6)](#es6에서는-화살표-함수를-사용하여-콜백-함수-내부의-this-문제를-해결할-수-있다)<br>
+   &nbsp;&nbsp;3-4. [super](#super)<br>
 
 ## 함수의 구분
 
