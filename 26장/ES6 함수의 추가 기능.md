@@ -559,3 +559,28 @@ class Person {
 const person = new Person();
 person.sayHi(); // Hi Lee
 ```
+
+### super
+
+- 화살표 함수는 함수 자체의 super 바인딩을 갖지 않는다.
+  - 즉, 화살표 함수 내부에서 super를 참조하면 상위스코프의 super를 참조한다.
+
+```js
+class Base {
+  constructor(name) {
+    this.name = name;
+  }
+  sayHi() {
+    return `Hi! ${this.name}`;
+  }
+}
+class Derived extends Base {
+  // 화살표 함수의 super는 상위 스코프인 constructor의 super를 가리킨다.
+  sayHi = () => `${super.sayHi()} how are you doing?`;
+}
+const derived = new Derived("Lee");
+console.log(derived.sayHi()); // Hi! Lee how are you doing?
+```
+
+- super는 내부 슬롯 [[HomeObject]]를 갖는 ES6 메서드 내에서만 사용할 수 있는 키워드이다.
+  - sayHi 클래스 필드에 할당한 화살표 함수는 ES6 메서드는 아니지만 함수 자체의 super 바인딩을 갖지 않으므로 super를 참조해도 에러가 발생하지 않고 상위 스코프인 constructor의 super 바인딩을 참조한다.
