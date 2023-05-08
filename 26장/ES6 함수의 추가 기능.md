@@ -12,6 +12,7 @@
    &nbsp;&nbsp;&nbsp;&nbsp;3-3-2. [콜백 함수 내부의 this 문제를 해결하기 위한 방법(ES6)](#es6에서는-화살표-함수를-사용하여-콜백-함수-내부의-this-문제를-해결할-수-있다)<br>
    &nbsp;&nbsp;3-4. [super](#super)<br>
    &nbsp;&nbsp;3-5. [arguments](#arguments)<br>
+   &nbsp;&nbsp;3-5. [Rest 파라미터와 arguments 객체](#rest-파라미터와-arguments-객체)<br>
 
 ## 함수의 구분
 
@@ -611,3 +612,97 @@ foo(1, 2); //ReferenceError
   - 하지만, 화살표 함수에서는 arguments 객체를 사용할 수 없다.
     - 상위 스코프의 arguments 객체는 참조할 수 있지만 화살표 함수 자신에게 전달된 인수 목록을 확인할 수 없고 상위 함수에게 전달된 인수 목록을 참조하므로 그다지 도움되지 않는다.
       - 즉, 화살표 함수로 가변 인자 함수를 구현해야 할 때는 Rest 파라미터를 사용해야 한다.
+
+## Rest 파라미터
+
+### Rest 파라미터 기본 문법
+
+- 매개변수 이름 앞에 세개의 점 ...을 붙여 정의한 매개변수를 의미한다.
+- Rest 파라미터는 함수에 전달된 인수들의 목록을 배열로 전달받는다.
+
+```js
+function foo(...rest) {
+  // 매개변수 rest는 인수들의 목록을 배열로 전달받는 Rest 파라미터이다.
+  console.log(rest); // [1, 2, 3, 4, 5, ]
+}
+foo(1, 2, 3, 4, 5);
+```
+
+일반 매개변수와 Rest 파라미터는 함께 사용할 수 있다.
+이때 함수에 전달된 인수들은 매개변수와 Rest 파라미터에 순차적으로 할당된다.
+
+```js
+function foo(param, ...rest) {
+  console.log(param); // 1
+  console.log(rest); // [2, 3, 4, 5]
+}
+foo(1, 2, 3, 4, 5);
+
+function bar(param1, param2, ...rest) {
+  console.log(param1); // 1
+  console.log(param2); // 2
+  console.log(rest); // [3, 4, 5]
+}
+bar(1, 2, 3, 4, 5);
+```
+
+Rest 파라미터는 먼저 선언된 매개변수에 할당된 인수를 제외한 나머지 인수들로 구성된 배열이 할당된다.
+
+- 즉, Rest 파라미터는 반드시 마지막 파라미터여야 한다.
+
+```js
+function foo(...rest, param1, param2){}
+foo(1, 2, 3, 4, 5); // SyntaxError
+```
+
+Rest 파라미터는 단 하나만 선언할 수 있다.
+
+```js
+function foo(...rest1, ...rest2){}
+foo(1, 2, 3, 4, 5); // SyntaxError
+```
+
+Rest 파라미터는 함수 정의 시 선언한 매개변수 개수를 나타내는 함수 객체의 length 프로퍼티에 영향을 주지 않는다.
+
+```js
+function foo(...rest) {}
+console.log(foo.length); // 0
+
+function bar(x, ...rest) {}
+console.log(bar.length); // 1
+
+function kamja(x, y, ...rest) {}
+console.log(kamja.length); // 2
+```
+
+### Rest 파라미터와 arguments 객체
+
+- arguments 객체는 함수 호출 시 전달된 인수들의 정보를 담고 있는 순회 가능한 유사 배열 객체이며, 함수 내부에서 지역 변수처럼 사용할 수 있다.
+
+```js
+// 매개변수의 개수를 사전에 알 수 없는 가변 인자 함수
+function sum() {
+  // 가변 인자 함수는 arguments 객체를 통해 인수를 전달받는다.
+  console.log(arguments);
+}
+sum(1, 2); // [1, 2, callee: ƒ, Symbol(Symbol.iterator): ƒ]
+```
+
+arguments 객체는 배열이 아닌 유사 배열 객체이므로 배열 메서드를 사용하려면 Function.prototype.call이나 Function.prototype.apply 메서드를 사용하여 arguments 객체를 배열로 변환해야 하는 번거로움이 있다.
+
+```js
+function sum() {
+  // 유사 배열 객체인 arguments 객체를 배열로 변환한다.
+  var array = Array.prototype.slice.call(arguments);
+
+  return array.reduce(function (pre, cur) {
+    return pre + cur;
+  }, 0);
+}
+
+console.log(sum(1, 2, 3, 4, 5)); // 15
+```
+
+- ES6 메서드는 Rest 파라미터와 arguments 객체를 모두 사용할 수 있다.
+  - 하지만, 화살표 함수는 함수 자체의 arguments 객체를 갖지 않는다.
+  - 따라서 화살표 함수로 가변 인자 함수를 구현해야 할 때는 반드시 Rest 파라미터를 사용해야 한다.
