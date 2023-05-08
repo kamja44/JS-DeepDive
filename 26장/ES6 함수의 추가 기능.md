@@ -585,3 +585,28 @@ console.log(derived.sayHi()); // Hi! Lee how are you doing?
 
 - super는 내부 슬롯 [[HomeObject]]를 갖는 ES6 메서드 내에서만 사용할 수 있는 키워드이다.
   - sayHi 클래스 필드에 할당한 화살표 함수는 ES6 메서드는 아니지만 함수 자체의 super 바인딩을 갖지 않으므로 super를 참조해도 에러가 발생하지 않고 상위 스코프인 constructor의 super 바인딩을 참조한다.
+
+### arguments
+
+- 화살표 함수는 함수 자체의 arguments 바인딩을 갖지 않는다.
+  - 화살표 함수 내부에서 arguments를 참조하면 this와 마찬가지로 상위 스코프의 arguments를 참조한다.
+
+```js
+(function () {
+  // 화살표 함수 foo의 arguments는 상위 스코프인 즉시 실행 함수의 arguments를 가리킨다.
+  const foo = () => console.log(arguments);
+  // [Arguments] [1, 2, callee: ƒ, Symbol(Symbol.iterator): ƒ]
+  foo(3, 4);
+})(1, 2);
+
+// 화살표 함수 foo의 arguments는 상위 스코프인 전역의 arguments를 가리킨다.
+// 하지만 전역에는 arguments 객체가 존재하지 않는다.
+// arguments 객체는 함수 내부에서만 유효하다.
+const foo = () => console.log(arguments);
+foo(1, 2); //ReferenceError
+```
+
+- arguments 객체는 함수를 정의할 때 매개변수의 개수를 확정할 수 없는 가변 인자 함수를 구현할 때 유용하다.
+  - 하지만, 화살표 함수에서는 arguments 객체를 사용할 수 없다.
+    - 상위 스코프의 arguments 객체는 참조할 수 있지만 화살표 함수 자신에게 전달된 인수 목록을 확인할 수 없고 상위 함수에게 전달된 인수 목록을 참조하므로 그다지 도움되지 않는다.
+      - 즉, 화살표 함수로 가변 인자 함수를 구현해야 할 때는 Rest 파라미터를 사용해야 한다.
