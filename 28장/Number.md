@@ -1,5 +1,14 @@
 1. [Number 생성자 함수](#number-생성자-함수)<br>
    표준 빌트인 객체인 Number는 원시 타입인 숫자를 다룰 때 유용한 프로퍼티와 메서드를 제공한다.
+2. [Number 프로퍼티]<br>
+   &nbsp;&nbsp; 2-1. [Number.EPSILON](#numberepsilon)<br>
+   &nbsp;&nbsp; 2-2. [Number.MAX_VALUE](#numbermax_value)<br>
+   &nbsp;&nbsp; 2-3. [Number.MIN_VALUE](#numbermin_value)<br>
+   &nbsp;&nbsp; 2-4. [Number.MAX_SAFE_INTEGER](#numbermax_safe_integer)<br>
+   &nbsp;&nbsp; 2-5. [Number.MIN_SAFE_INTEGER](#numbermin_safe_integer)<br>
+   &nbsp;&nbsp; 2-6. [Number.POSITIVE_INFINITY](#numberpositive_infinity)<br>
+   &nbsp;&nbsp; 2-7. [Number.NEGATIVE_INFINITY](#numbernegative_infinity)<br>
+   &nbsp;&nbsp; 2-8. [Number.NaN](#numbernan)<br>
 
 ## Number 생성자 함수
 
